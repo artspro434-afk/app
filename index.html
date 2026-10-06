@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bez_granits</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#07080c; --card:rgba(26,30,42,.72); --card-solid:#151925;
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+    --text:#f4f6fb; --muted:#9aa3b8; --dim:#6b7489;
+    --accent:#7b6cff; --accent2:#a78bff; --ok:#2fe08a; --gold:#ffd166;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Inter,sans-serif;
+    color:var(--text);position:relative;overflow-x:hidden;
+    background:var(--bg);
+    padding:14px 16px calc(104px + env(safe-area-inset-bottom));
+    max-width:560px;margin:0 auto;
+  }
+  /* премиальный анимированный фон */
+  body::before{content:"";position:fixed;inset:-20% -20% auto -20%;height:70%;z-index:-1;
+    background:
+      radial-gradient(60% 60% at 75% 20%, rgba(123,108,255,.35), transparent 70%),
+      radial-gradient(50% 50% at 15% 0%, rgba(47,224,138,.14), transparent 70%);
+    filter:blur(30px);animation:drift 14s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translateY(-6px) scale(1)}to{transform:translateY(14px) scale(1.06)}}
+
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .rise{animation:rise .55s cubic-bezier(.2,.75,.2,1) both}
+  .d1{animation-delay:.04s}.d2{animation-delay:.10s}.d3{animation-delay:.16s}
+  .d4{animation-delay:.22s}.d5{animation-delay:.30s}.d6{animation-delay:.38s}.d7{animation-delay:.46s}
+
+  /* HERO */
+  .hero{padding:20px 2px 4px}
+  .logo{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px;letter-spacing:.2px;
+    color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    padding:8px 15px;border-radius:999px;box-shadow:0 10px 30px rgba(123,108,255,.45);
+    position:relative;overflow:hidden}
+  .logo::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    transform:skewX(-20deg);animation:shine 4.5s ease-in-out infinite}
+  @keyframes shine{0%,60%{left:-60%}100%{left:130%}}
+  .logo .pulse{width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+  h1{font-size:33px;line-height:1.05;letter-spacing:-.8px;margin:18px 0 8px;font-weight:800}
+  h1 .grad{background:linear-gradient(120deg,#fff,#b9aaff 60%,#8ef0c0);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--muted);font-size:15px;margin:0;line-height:1.45;max-width:430px}
+
+  /* FEATURES */
+  .feats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 4px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:13px 14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .feat .i{font-size:20px}
+  .feat .t{font-weight:650;font-size:14px;margin-top:7px}
+  .feat .d{color:var(--muted);font-size:12px;margin-top:2px}
+
+  .label{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;
+    margin:26px 4px 12px;font-weight:700}
+
+  /* TARIFFS */
+  .plan{position:relative;background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius);padding:17px 18px;margin-bottom:13px;cursor:pointer;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), border-color .18s, box-shadow .18s}
+  .plan:active{transform:scale(.98)}
+  .plan.pop{border-color:rgba(167,139,255,.45)}
+  .plan.sel{border-color:var(--accent2);box-shadow:0 14px 40px rgba(123,108,255,.3),inset 0 0 0 1px rgba(167,139,255,.3)}
+  .plan .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .plan .name{font-weight:750;font-size:18px;letter-spacing:-.2px}
+  .plan .per{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .plan .right{display:flex;align-items:center;gap:13px}
+  .plan .price{font-weight:850;font-size:23px;letter-spacing:-.6px;white-space:nowrap}
+  .ribbon{position:absolute;top:-1px;right:16px;background:linear-gradient(135deg,var(--gold),#ffb020);
+    color:#2a1e00;font-weight:800;font-size:10.5px;letter-spacing:.3px;padding:5px 11px;
+    border-radius:0 0 11px 11px;text-transform:uppercase}
+  .check{width:24px;height:24px;border-radius:50%;border:2px solid var(--line2);
+    display:flex;align-items:center;justify-content:center;transition:.18s;flex:0 0 auto}
+  .plan.sel .check{border-color:var(--accent2);background:var(--accent2);transform:scale(1.05)}
+  .check svg{width:13px;height:13px;opacity:0;transform:scale(.5);transition:.18s}
+  .plan.sel .check svg{opacity:1;transform:scale(1)}
+  .note{display:flex;align-items:center;gap:8px;justify-content:center;color:var(--muted);
+    font-size:13px;margin:2px 4px 0}
+  .note b{color:var(--text)}
+
+  /* STEPS */
+  .steps{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:4px 16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .step{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:0}
+  .step .n{flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+    font-weight:750;font-size:13px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 16px rgba(123,108,255,.4)}
+  .step .tx{font-size:14px;line-height:1.4;align-self:center}
+  .step .tx b{color:#fff;font-weight:700}
+  .step .tx .os{color:var(--accent2);font-weight:700}
+
+  .support{margin-top:20px;text-align:center}
+  .support a{display:inline-block;color:var(--text);text-decoration:none;font-weight:650;font-size:14px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 22px;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .foot{color:var(--dim);font-size:11.5px;text-align:center;margin-top:20px;line-height:1.5}
+
+  #cta{position:fixed;left:0;right:0;bottom:0;padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,transparent,var(--bg) 40%);display:none}
+  #cta button{width:100%;max-width:528px;margin:0 auto;display:block;border:0;border-radius:16px;
+    padding:17px;font-size:16px;font-weight:750;color:#fff;cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 14px 34px rgba(123,108,255,.5)}
+</style>
+</head>
+<body>
+
+  <div class="hero rise d1">
+    <span class="logo"><span class="pulse"></span><span id="brand">Bez_granits</span></span>
+    <h1>Интернет <span class="grad">без границ</span></h1>
+    <p class="sub">Высокая скорость, защищённое соединение и подключение за одну минуту.</p>
+  </div>
+
+  <div class="feats rise d2">
+    <div class="feat"><div class="i">⚡️</div><div class="t">Высокая скорость</div><div class="d">без просадок и лагов</div></div>
+    <div class="feat"><div class="i">🔒</div><div class="t">Приватность</div><div class="d">надёжное шифрование</div></div>
+    <div class="feat"><div class="i">👥</div><div class="t">До 2 устройств</div><div class="d">одна подписка</div></div>
+    <div class="feat"><div class="i">♾️</div><div class="t">Без лимитов</div><div class="d">трафик не режем</div></div>
+  </div>
+
+  <div class="label rise d3">Выбери тариф</div>
+  <div id="plans"></div>
+  <div class="note rise d4">🔑 Одна подписка работает <b>до 2 устройств</b> одновременно</div>
+
+  <div class="label rise d5">Как подключить</div>
+  <div class="steps rise d5">
+    <div class="step"><div class="n">1</div><div class="tx">Оплати доступ — <b>ключ</b> придёт в этот бот</div></div>
+    <div class="step"><div class="n">2</div><div class="tx">Установи приложение: <span class="os">iPhone — Incy</span>, <span class="os">ПК — Happ</span></div></div>
+    <div class="step"><div class="n">3</div><div class="tx">Открой приложение → «+» → <b>вставь ключ</b> из буфера</div></div>
+    <div class="step"><div class="n">4</div><div class="tx">Нажми <b>Подключить</b> — готово ✅</div></div>
+  </div>
+
+  <div class="support rise d6">
+    <a id="support" href="#">💬 Поддержка</a>
+  </div>
+
+  <div class="foot rise d7">Оплата и выдача ключей — в чат-боте.</div>
+
+  <div id="cta"><button id="ctaBtn">Выбери тариф</button></div>
+
+<script>
+  // ===== НАСТРОЙ ПОД СЕБЯ =====
+  var BRAND = "Bez_granits";
+  var SUPPORT = "https://t.me/A21natoly";
+  var TARIFFS = [
+    { code:"m1", name:"1 месяц",   per:"≈150 ₽ / мес",  price:150, badge:"" },
+    { code:"m3", name:"3 месяца",  per:"≈133 ₽ / мес",  price:400, badge:"популярный" },
+    { code:"m6", name:"6 месяцев", per:"≈125 ₽ / мес · выгода 17%", price:750, badge:"" },
+  ];
+  // ============================
+
+  var tg = window.Telegram ? window.Telegram.WebApp : null;
+  document.getElementById("brand").textContent = BRAND;
+  document.getElementById("support").href = SUPPORT;
+  var selected = null;
+
+  function money(n){ return n.toLocaleString("ru-RU") + " ₽"; }
+
+  function render(){
+    var box = document.getElementById("plans");
+    TARIFFS.forEach(function(t, idx){
+      var el = document.createElement("div");
+      el.className = "plan rise d" + (idx+3) + (t.badge==="популярный" ? " pop" : "");
+      el.innerHTML =
+        (t.badge ? '<span class="ribbon">'+t.badge+'</span>' : '') +
+        '<div class="row"><div><div class="name">'+t.name+'</div><div class="per">'+t.per+'</div></div>'+
+        '<div class="right"><div class="price">'+money(t.price)+'</div>'+
+        '<div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>'+
+        '</div></div>';
+      el.onclick = function(){ select(t, el); };
+      box.appendChild(el);
+    });
+  }
+
+  function select(t, el){
+    selected = t;
+    document.querySelectorAll(".plan").forEach(function(p){ p.classList.remove("sel"); });
+    el.classList.add("sel");
+    var label = "Оплатить · " + money(t.price);
+    if (tg && tg.MainButton){
+      tg.MainButton.setText(label);
+      tg.MainButton.show();
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    }
+    document.getElementById("ctaBtn").textContent = label;
+  }
+
+  function pay(){
+    if (!selected) return;
+    var payload = JSON.stringify({ action:"buy", plan:selected.code });
+    if (tg && tg.sendData){
+      tg.sendData(payload);   // бот получит выбор, покажет реквизиты и попросит чек
+    } else {
+      alert("Выбран тариф: " + selected.name + " (" + money(selected.price) + ")");
+    }
+  }
+
+  render();
+
+  if (tg){
+    tg.ready(); tg.expand();
+    try{ tg.setHeaderColor && tg.setHeaderColor("#07080c"); }catch(e){}
+    if (tg.MainButton){
+      tg.MainButton.setParams({ color:"#7b6cff", text_color:"#ffffff" });
+      tg.MainButton.onClick(pay);
+    }
+  } else {
+    document.getElementById("cta").style.display = "block";
+    document.getElementById("ctaBtn").onclick = pay;
+  }
+</script>
+</body>
+</html>
